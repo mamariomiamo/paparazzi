@@ -135,9 +135,9 @@
   <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
 
     <!-- setpoints -->
-    <define name="SP_MAX_PHI"   value="60."  unit="deg"  />
-    <define name="SP_MAX_THETA" value="60."  unit="deg"  />
-    <define name="SP_MAX_PSI"   value="180." unit="deg"  />
+    <define name="SP_MAX_PHI"   value="20."  unit="deg"  />
+    <define name="SP_MAX_THETA" value="20."  unit="deg"  />
+    <define name="SP_MAX_PSI"   value="20." unit="deg"  />
     <define name="SP_MAX_R"     value="90."  unit="deg/s"/>
     <define name="SP_MAX_P"     value="90."  unit="deg/s"/>
     <define name="DEADBAND_R"   value="250"              />
@@ -196,6 +196,8 @@
     <define name="H_X" value=" 0.47577"/>
     <define name="H_Y" value=" 0.11811"/>
     <define name="H_Z" value=" 0.87161"/>
+    <define name="USE_GPS_HEADING" value="0"/>
+    <define name="GRAVITY_HEURISTIC_FACTOR" value="0"/>
   </section>
 
   <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
@@ -212,6 +214,18 @@
       <!--configure name="LOGGER_CONTROL_SWITCH" value="RADIO_AUX2"/-->
       <!--configure name="LOGGER_LED" value="3"/-->
     </module>
+
+    <module name="stereocam">
+      <configure name="STEREO_UART" value="UART1"/>
+      <configure name="STEREO_BAUD" value="B921600"/>
+      <define name="SEND_STEREO" value="FALSE"/>
+    </module>
+  <!--		<module name="stereocam_state2camera"-->
+  <!--			<configure name="STEREO_UART" value="UART1"/>-->
+  <!--			<configure name="STEREO_BAUD" value="B115200"/>-->
+  <!--		</module-->
+    <module name="stereocam_stereocam2state"/>
+    <module name="droplet"/>
   </modules>
 
   <define name="USE_BAROMETER" value="TRUE"/>
@@ -238,7 +252,16 @@
 
       <configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/>    
 
-      <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>        
+      <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>  
+
+      <define name="LOW_NOISE_TIME" value="50"/> <!--Set the time of the ahrs alignement, 1 = 100 samples = 0.2s at 500 Hz -->
+      
+      <define name="USE_BARO_BOARD" value="1"/>
+      <define name="BARO_PERIODIC_FREQUENCY" value="100"/>
+		  
+      <define name="USE_ATTITUDE_REF" value="0"/> <!-- disable reference model, directly use setpoint-->
+
+      <define name="AHRS_ALIGNER_LED" value="2"/>      
     </target>
 
     <module name="actuators" type="pwm">
@@ -247,7 +270,8 @@
     </module>
 
     <module name="telemetry" type="transparent">
-      <configure name="MODEM_BAUD" value="B115200"/>
+      <!--configure name="MODEM_BAUD" value="B115200"/-->
+      <configure name="MODEM_BAUD" value="B921600"/>
       <configure name="MODEM_PORT" value="UART1"/>
     </module>
 
@@ -258,7 +282,6 @@
     <module name="stabilization" type="int_quat"/>
 
     <module name="ahrs" type="int_cmpl_quat">
-      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/>
       <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="TRUE"/>
     </module>
     
